@@ -17,12 +17,14 @@ class chesspiece {
   public:
     chesspiece();
     chesspiece(int p, int c, std::string pos);
-    int getColor() const;
-    int getPiece() const;
-    std::string getPosition() const;
-    void setPos(std::string pos);
-    std::string getUnicode() const;
-    bool getHasMoved() const;
-    void setEnPassant();
+    int getcolor() const;
+    int getpiece() const;
+    std::string getposition() const;
+    void setpos(std::string pos);
+    std::string getunicode() const;
+    bool gethasmoved() const;
+    void setenpassant();
+    void addmove(std::string move);
+    std::vector<std::string> getmoves() const;
 };
 #endif

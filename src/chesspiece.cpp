@@ -64,30 +64,38 @@ chesspiece::chesspiece(int p, int c, std::string pos) {
     }
 }
 
-int chesspiece::getColor() const {
+int chesspiece::getcolor() const {
     return color;
 }
 
-int chesspiece::getPiece() const {
+int chesspiece::getpiece() const {
     return piece;
 }
 
-std::string chesspiece::getPosition() const {
+std::string chesspiece::getposition() const {
     return position;
 }
 
-void chesspiece::setPos(std::string pos) {
+void chesspiece::setpos(std::string pos) {
     position = pos;
 }
 
-std::string chesspiece::getUnicode() const {
+std::string chesspiece::getunicode() const {
     return unicode;
 }
 
-bool chesspiece::getHasMoved() const {
+bool chesspiece::gethasmoved() const {
     return hasMoved;
 }
 
-void chesspiece::setEnPassant() {
+void chesspiece::setenpassant() {
     isEnPassant = true;
+}
+
+void chesspiece::addmove(std::string move) {
+    moves.push_back(move);
+}
+
+std::vector<std::string> chesspiece::getmoves() const {
+    return moves;
 }
