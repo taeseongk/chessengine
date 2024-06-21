@@ -3,17 +3,21 @@
 
 #include "chesspiece.h"
 #include <iostream>
-#include <vector>
 
 class chessboard {
   private:
     std::vector<chesspiece *> wpieces;
     std::vector<chesspiece *> bpieces;
-    chesspiece *board[8][8];
+    chesspiece *wboard[8][8];
+    chesspiece *bboard[8][8];
 
   public:
     chessboard();
     ~chessboard();
+    void postoint(int color, std::string pos, int &x, int &y);
+    std::string inttopos(int x, int y);
+    void calcmove(int color);
+    void addmoves(chesspiece *piece);
     void print(int color);
 };
 

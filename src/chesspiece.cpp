@@ -6,13 +6,16 @@ chesspiece::chesspiece() {
     unicode = " ";
 }
 
-chesspiece::chesspiece(int p, int c) {
+chesspiece::chesspiece(int p, int c, std::string pos) {
     piece = p;
     color = c;
+    position = pos;
     if (!color) {
         switch (piece) {
         case 0:
             unicode = "\u2659";
+            hasMoved = false;
+            isEnPassant = false;
             break;
         case 1:
             unicode = "\u2656";
@@ -37,6 +40,7 @@ chesspiece::chesspiece(int p, int c) {
         switch (piece) {
         case 0:
             unicode = "\u265f";
+            hasMoved = false;
             break;
         case 1:
             unicode = "\u265c";
@@ -60,19 +64,30 @@ chesspiece::chesspiece(int p, int c) {
     }
 }
 
-void chesspiece::setPos(int x, int y) {
-    posX = x;
-    posY = y;
+int chesspiece::getColor() const {
+    return color;
 }
 
-int chesspiece::getPosX() const {
-    return posX;
+int chesspiece::getPiece() const {
+    return piece;
 }
 
-int chesspiece::getPosY() const {
-    return posY;
+std::string chesspiece::getPosition() const {
+    return position;
+}
+
+void chesspiece::setPos(std::string pos) {
+    position = pos;
 }
 
 std::string chesspiece::getUnicode() const {
     return unicode;
+}
+
+bool chesspiece::getHasMoved() const {
+    return hasMoved;
+}
+
+void chesspiece::setEnPassant() {
+    isEnPassant = true;
 }

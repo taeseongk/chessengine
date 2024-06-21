@@ -1,43 +1,40 @@
 #include "../include/chessboard.h"
 
 chessboard::chessboard() {
-    for (int i = 0; i < 8; i++) {
-        chesspiece *wpawn = new chesspiece(0, 0);
-        wpawn->setPos(6, i);
-        wpieces.push_back(wpawn);
-    }
-    int wOrder[8] = {1, 2, 3, 4, 5, 3, 2, 1};
-    for (int i = 0; i < 8; i++) {
-        chesspiece *piece = new chesspiece(wOrder[i], 0);
-        piece->setPos(7, i);
+    std::string wpositions[16] = {"a2", "b2", "c2", "d2", "e2", "f2",
+                                  "g2", "h2", "a1", "b1", "c1", "d1",
+                                  "e1", "f1", "g1", "h1"};
+    int worder[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 3, 2, 1};
+    for (int i = 0; i < 16; i++) {
+        chesspiece *piece = new chesspiece(worder[i], 0, wpositions[i]);
+        int x = -1;
+        int y = -1;
+        postoint(0, wpositions[i], x, y);
+        wboard[x][y] = piece;
+        postoint(1, wpositions[i], x, y);
+        bboard[x][y] = piece;
         wpieces.push_back(piece);
     }
 
-    for (int i = 0; i < 8; i++) {
-        chesspiece *bpawn = new chesspiece(0, 1);
-        bpawn->setPos(1, i);
-        bpieces.push_back(bpawn);
-    }
-    int bOrder[8] = {1, 2, 3, 4, 5, 3, 2, 1};
-    for (int i = 0; i < 8; i++) {
-        chesspiece *piece = new chesspiece(bOrder[i], 1);
-        piece->setPos(0, i);
+    std::string bpositions[16] = {"a7", "b7", "c7", "d7", "e7", "f7",
+                                  "g7", "h7", "a8", "b8", "c8", "d8",
+                                  "e8", "f8", "g8", "h8"};
+    int border[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 3, 2, 1};
+    for (int i = 0; i < 16; i++) {
+        chesspiece *piece = new chesspiece(border[i], 1, bpositions[i]);
+        int x = -1;
+        int y = -1;
+        postoint(0, bpositions[i], x, y);
+        wboard[x][y] = piece;
+        postoint(1, bpositions[i], x, y);
+        bboard[x][y] = piece;
         bpieces.push_back(piece);
     }
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 2; i <= 5; i++) {
         for (int j = 0; j < 8; j++) {
-            if (i == 0) {
-                board[0][j] = bpieces[8 + j];
-            } else if (i == 1) {
-                board[1][j] = bpieces[j];
-            } else if (i == 6) {
-                board[6][j] = wpieces[j];
-            } else if (i == 7) {
-                board[7][j] = wpieces[8 + j];
-            } else {
-                board[i][j] = new chesspiece();
-            }
+            wboard[i][j] = new chesspiece();
+            bboard[i][j] = new chesspiece();
         }
     }
 }
@@ -53,6 +50,53 @@ chessboard::~chessboard() {
         bpieces.pop_back();
         delete piece;
     }
+}
+
+void chessboard::postoint(int color, std::string pos, int &x, int &y) {
+    if (!color) {
+        x = 8 - (pos[1] - '0');
+        y = pos[0] - 'a';
+    } else {
+        x = ((int)pos[1] - '0') - 1;
+        y = 'h' - pos[0];
+    }
+    return;
+}
+
+void chessboard::calcmove(int color) {
+    std::vector<chesspiece *> *pieces = !color ? &wpieces : &bpieces;
+    for (int i = 0; i < pieces->size(); i++) {}
+}
+
+void chessboard::addmoves(chesspiece *piece) {
+    /*
+        int x = -1;
+        int y = -1;
+        int c = piece->getColor();
+        int p = piece->getPiece();
+        postoint(c, ) if (!c) {
+            switch (p) {
+            case 0:
+                if (!piece->getHasMoved()) {
+                    if (board[][]) {}
+                } else {
+                }
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            default:
+                break;
+            }
+        }
+                 */
 }
 
 void chessboard::print(int color) {
@@ -79,11 +123,9 @@ void chessboard::print(int color) {
                 std::cout << "|";
             } else if ((j - 3) % 6 == 0) {
                 if (!color) {
-                    std::cout << board[8 - i][(j - 3) / 6]->getUnicode();
-                    // std::cout << " ";
+                    std::cout << wboard[8 - i][(j - 3) / 6]->getUnicode();
                 } else {
-                    // blackBoard[k][((j - 3) / 6) + 2].printPiece();
-                    std::cout << " ";
+                    std::cout << bboard[8 - i][(j - 3) / 6]->getUnicode();
                 }
             } else {
                 std::cout << " ";
