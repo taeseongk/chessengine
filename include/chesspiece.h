@@ -26,5 +26,6 @@ class chesspiece {
     void setenpassant();
     void addmove(std::string move);
     std::vector<std::string> getmoves() const;
+    void clearmoves();
 };
 #endif

@@ -87,6 +87,7 @@ std::string chessboard::inttopos(int color, int x, int y) {
 void chessboard::calcmoves(int color) {
     std::vector<chesspiece *> pieces = !color ? wpieces : bpieces;
     for (int i = 0; i < pieces.size(); i++) {
+        pieces[i]->clearmoves();
         addmoves(pieces[i]);
     }
 }
@@ -134,14 +135,25 @@ void chessboard::addmoves(chesspiece *piece) {
         dir = {{-1, -1}, {-1, 1}, {1, 1}, {1, -1}};
         break;
     case 4:
+        dir = {{-1, -1}, {-1, 1}, {1, 1},  {1, -1},
+               {-1, 0},  {1, 0},  {0, -1}, {0, 1}};
+        break;
     case 5:
         dir = {{-1, -1}, {-1, 1}, {1, 1},  {1, -1},
                {-1, 0},  {1, 0},  {0, -1}, {0, 1}};
+        for (int i = 0; i < dir.size(); i++) {
+            int dirX = dir[i].first;
+            int dirY = dir[i].second;
+            if (x + dirX >= 0 && x + dirX < 8 && y + dirY >= 0 &&
+                y + dirY < 8 && board[x + dirX][y + dirY]->getcolor() != c) {
+                piece->addmove(inttopos(c, x + dirX, y + dirY));
+            }
+        }
         break;
     default:
         break;
     }
-    if (p != 0 && p != 2) {
+    if (p != 0 && p != 2 && p != 5) {
         for (int i = 0; i < dir.size(); i++) {
             int dirX = dir[i].first;
             int dirY = dir[i].second;
@@ -149,29 +161,115 @@ void chessboard::addmoves(chesspiece *piece) {
             while (x + dirX >= 0 && x + dirX < 8 && y + dirY >= 0 &&
                    y + dirY < 8 && board[x + dirX][y + dirY]->getcolor() != c) {
                 piece->addmove(inttopos(c, x + dirX, y + dirY));
+                if (board[x + dirX][y + dirY]->getcolor() == 1 - c) {
+                    break;
+                }
                 k++;
                 dirX = dir[i].first * k;
                 dirY = dir[i].second * k;
             }
         }
     }
-    std::cout << piece->getunicode() << ": ";
-    for (int i = 0; i < piece->getmoves().size(); i++) {
-        std::cout << piece->getmoves()[i] << " ";
-    }
-    std::cout << std::endl;
 }
 
 void chessboard::showmoves(int color) {
     std::vector<chesspiece *> pieces = !color ? wpieces : bpieces;
     for (int i = 0; i < pieces.size(); i++) {
-        std::vector<std::string> moves = pieces[i]->getmoves();
         std::cout << pieces[i]->getunicode() << ": ";
-        for (int j = 0; j < moves.size(); j++) {
-            std::cout << moves[i] << ", ";
+        for (int j = 0; j < pieces[i]->getmoves().size(); j++) {
+            std::cout << pieces[i]->getmoves()[j] << " ";
         }
         std::cout << std::endl;
     }
+}
+
+void chessboard::makemove(chesspiece *piece, std::string move) {
+    int p = piece->getpiece();
+    int c = piece->getcolor();
+    int x;
+    int y;
+    postoint(c, piece->getposition(), x, y);
+    wboard[x][y] = new chesspiece();
+    postoint(1 - c, piece->getposition(), x, y);
+    bboard[x][y] = new chesspiece();
+    piece->setpos(move);
+    postoint(c, move, x, y);
+    wboard[x][y] = piece;
+    postoint(1 - c, move, x, y);
+    bboard[x][y] = piece;
+}
+
+void chessboard::checkmoves(chesspiece *piece) {}
+
+bool chessboard::ischeck(int color) {
+    std::vector<std::pair<int, int>> dir = {{1, 0}, {-1, 0},  {0, 1},  {0, -1},
+                                            {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+    int x;
+    int y;
+    chesspiece *king;
+    std::vector<chesspiece *> pieces = !color ? wpieces : bpieces;
+    chesspiece ***board = !color ? wboard : bboard;
+    for (int i = 0; i < pieces.size(); i++) {
+        if (pieces[i]->getpiece() == 5) {
+            king = pieces[i];
+        }
+    }
+    postoint(color, king->getposition(), x, y);
+    for (int i = 0; i < dir.size(); i++) {
+        int dirX = dir[i].first;
+        int dirY = dir[i].second;
+        int k = 1;
+        while (x + dirX >= 0 && x + dirX < 8 && y + dirY >= 0 && y + dirY < 8 &&
+               board[x + dirX][y + dirY]->getcolor() != color) {
+            if (board[x + dirX][y + dirY]->getcolor() == 1 - color) {
+                if (board[x + dirX][y + dirY]->getpiece() == 1 && i < 4) {
+                    std::cout << board[x + dirX][y + dirY]->getunicode()
+                              << board[x + dirX][y + dirY]->getposition()
+                              << std::endl;
+                    // return true;
+                } else if (board[x + dirX][y + dirY]->getpiece() == 3 &&
+                           i >= 4) {
+                    std::cout << board[x + dirX][y + dirY]->getunicode()
+                              << board[x + dirX][y + dirY]->getposition()
+                              << std::endl;
+                    // return true;
+                } else if (board[x + dirX][y + dirY]->getpiece() == 4) {
+                    std::cout << board[x + dirX][y + dirY]->getunicode()
+                              << board[x + dirX][y + dirY]->getposition()
+                              << std::endl;
+                    // return true;
+                } else if (k == 1 &&
+                           board[x + dirX][y + dirY]->getpiece() == 5) {
+                    std::cout << board[x + dirX][y + dirY]->getunicode()
+                              << board[x + dirX][y + dirY]->getposition()
+                              << std::endl;
+                    // return true;
+                }
+                break;
+            }
+            k++;
+            dirX = dir[i].first * k;
+            dirY = dir[i].second * k;
+        }
+    }
+    dir = {{-2, -1}, {-2, 1}, {-1, 2},  {1, 2},
+           {2, 1},   {2, -1}, {-1, -2}, {1, -2}};
+    for (int i = 0; i < dir.size(); i++) {
+        int dirX = dir[i].first;
+        int dirY = dir[i].second;
+        if (x + dirX >= 0 && x + dirX < 8 && y + dirY >= 0 && y + dirY < 8 &&
+            board[x + dirX][y + dirY]->getcolor() == 1 - color &&
+            board[x + dirX][y + dirY]->getpiece() == 2) {
+            std::cout << board[x + dirX][y + dirY]->getunicode()
+                      << board[x + dirX][y + dirY]->getposition() << std::endl;
+            // return true;
+        }
+    }
+    return false;
+}
+
+std::vector<chesspiece *> chessboard::getpieces(int color) const {
+    return !color ? wpieces : bpieces;
 }
 
 void chessboard::print(int color) {

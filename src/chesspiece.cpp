@@ -99,3 +99,7 @@ void chesspiece::addmove(std::string move) {
 std::vector<std::string> chesspiece::getmoves() const {
     return moves;
 }
+
+void chesspiece::clearmoves() {
+    moves.clear();
+}

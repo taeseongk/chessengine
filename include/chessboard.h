@@ -11,6 +11,8 @@ class chessboard {
     std::vector<chesspiece *> bpieces;
     chesspiece ***wboard;
     chesspiece ***bboard;
+    std::vector<chesspiece *> wcheck;
+    std::vector<chesspiece *> bcheck;
 
   public:
     chessboard();
@@ -20,6 +22,10 @@ class chessboard {
     void calcmoves(int color);
     void addmoves(chesspiece *piece);
     void showmoves(int color);
+    void makemove(chesspiece *piece, std::string move);
+    void checkmoves(chesspiece *piece);
+    bool ischeck(int color);
+    std::vector<chesspiece *> getpieces(int color) const;
     void print(int color);
 };
 
