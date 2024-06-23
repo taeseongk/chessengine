@@ -20,11 +20,12 @@ class chesspiece {
     int getcolor() const;
     int getpiece() const;
     std::string getposition() const;
-    void setpos(std::string pos);
+    void setposition(std::string pos);
     std::string getunicode() const;
     bool gethasmoved() const;
     void setenpassant();
     void addmove(std::string move);
+    void delmove(std::string move);
     std::vector<std::string> getmoves() const;
     void clearmoves();
 };

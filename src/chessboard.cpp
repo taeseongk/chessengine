@@ -89,6 +89,7 @@ void chessboard::calcmoves(int color) {
     for (int i = 0; i < pieces.size(); i++) {
         pieces[i]->clearmoves();
         addmoves(pieces[i]);
+        checkmoves(pieces[i]);
     }
 }
 
@@ -188,18 +189,46 @@ void chessboard::makemove(chesspiece *piece, std::string move) {
     int c = piece->getcolor();
     int x;
     int y;
+    chesspiece ***board = !c ? wboard : bboard;
+    chesspiece ***oboard = !c ? bboard : wboard;
     postoint(c, piece->getposition(), x, y);
-    wboard[x][y] = new chesspiece();
+    board[x][y] = new chesspiece();
     postoint(1 - c, piece->getposition(), x, y);
-    bboard[x][y] = new chesspiece();
-    piece->setpos(move);
+    oboard[x][y] = new chesspiece();
+    piece->setposition(move);
     postoint(c, move, x, y);
-    wboard[x][y] = piece;
+    board[x][y] = piece;
     postoint(1 - c, move, x, y);
-    bboard[x][y] = piece;
+    oboard[x][y] = piece;
 }
 
-void chessboard::checkmoves(chesspiece *piece) {}
+void chessboard::checkmoves(chesspiece *piece) {
+    int c = piece->getcolor();
+    chesspiece ***board = !c ? wboard : bboard;
+    std::vector<std::string> moves = piece->getmoves();
+    int size = moves.size();
+    for (int i = size - 1; i >= 0; i--) {
+        int x;
+        int y;
+        int newX;
+        int newY;
+        chesspiece *captured = nullptr;
+        postoint(c, piece->getposition(), x, y);
+        postoint(c, moves[i], newX, newY);
+        board[x][y] = new chesspiece();
+        if (board[newX][newY]->getpiece() != -1) {
+            captured = board[newX][newY];
+        }
+        board[newX][newY] = piece;
+        piece->setposition(inttopos(c, newX, newY));
+        if (ischeck(c)) {
+            piece->delmove(moves[i]);
+        }
+        board[newX][newY] = captured ? captured : new chesspiece();
+        board[x][y] = piece;
+        piece->setposition(inttopos(c, x, y));
+    }
+}
 
 bool chessboard::ischeck(int color) {
     std::vector<std::pair<int, int>> dir = {{1, 0}, {-1, 0},  {0, 1},  {0, -1},
@@ -223,27 +252,15 @@ bool chessboard::ischeck(int color) {
                board[x + dirX][y + dirY]->getcolor() != color) {
             if (board[x + dirX][y + dirY]->getcolor() == 1 - color) {
                 if (board[x + dirX][y + dirY]->getpiece() == 1 && i < 4) {
-                    std::cout << board[x + dirX][y + dirY]->getunicode()
-                              << board[x + dirX][y + dirY]->getposition()
-                              << std::endl;
-                    // return true;
+                    return true;
                 } else if (board[x + dirX][y + dirY]->getpiece() == 3 &&
                            i >= 4) {
-                    std::cout << board[x + dirX][y + dirY]->getunicode()
-                              << board[x + dirX][y + dirY]->getposition()
-                              << std::endl;
-                    // return true;
+                    return true;
                 } else if (board[x + dirX][y + dirY]->getpiece() == 4) {
-                    std::cout << board[x + dirX][y + dirY]->getunicode()
-                              << board[x + dirX][y + dirY]->getposition()
-                              << std::endl;
-                    // return true;
+                    return true;
                 } else if (k == 1 &&
                            board[x + dirX][y + dirY]->getpiece() == 5) {
-                    std::cout << board[x + dirX][y + dirY]->getunicode()
-                              << board[x + dirX][y + dirY]->getposition()
-                              << std::endl;
-                    // return true;
+                    return true;
                 }
                 break;
             }
@@ -260,9 +277,7 @@ bool chessboard::ischeck(int color) {
         if (x + dirX >= 0 && x + dirX < 8 && y + dirY >= 0 && y + dirY < 8 &&
             board[x + dirX][y + dirY]->getcolor() == 1 - color &&
             board[x + dirX][y + dirY]->getpiece() == 2) {
-            std::cout << board[x + dirX][y + dirY]->getunicode()
-                      << board[x + dirX][y + dirY]->getposition() << std::endl;
-            // return true;
+            return true;
         }
     }
     return false;

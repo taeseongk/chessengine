@@ -76,7 +76,7 @@ std::string chesspiece::getposition() const {
     return position;
 }
 
-void chesspiece::setpos(std::string pos) {
+void chesspiece::setposition(std::string pos) {
     position = pos;
 }
 
@@ -94,6 +94,14 @@ void chesspiece::setenpassant() {
 
 void chesspiece::addmove(std::string move) {
     moves.push_back(move);
+}
+
+void chesspiece::delmove(std::string move) {
+    for (int i = 0; i < this->moves.size(); i++) {
+        if (this->moves[i] == move) {
+            this->moves.erase(this->moves.begin() + i);
+        }
+    }
 }
 
 std::vector<std::string> chesspiece::getmoves() const {

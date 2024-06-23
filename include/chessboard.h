@@ -11,8 +11,6 @@ class chessboard {
     std::vector<chesspiece *> bpieces;
     chesspiece ***wboard;
     chesspiece ***bboard;
-    std::vector<chesspiece *> wcheck;
-    std::vector<chesspiece *> bcheck;
 
   public:
     chessboard();
