@@ -19,11 +19,15 @@ class chesspiece {
     chesspiece(int p, int c, std::string pos);
     int getcolor() const;
     int getpiece() const;
+    void setpiece(int p);
     std::string getposition() const;
     void setposition(std::string pos);
     std::string getunicode() const;
+    void setunicode(int p, int c);
     bool gethasmoved() const;
-    void setenpassant();
+    void sethasmoved();
+    void setenpassant(bool value);
+    bool getenpassant() const;
     void addmove(std::string move);
     void delmove(std::string move);
     std::vector<std::string> getmoves() const;

@@ -10,57 +10,30 @@ chesspiece::chesspiece(int p, int c, std::string pos) {
     piece = p;
     color = c;
     position = pos;
-    if (!color) {
-        switch (piece) {
-        case 0:
-            unicode = "\u2659";
-            hasMoved = false;
-            isEnPassant = false;
-            break;
-        case 1:
-            unicode = "\u2656";
-            break;
-        case 2:
-            unicode = "\u2658";
-            break;
-        case 3:
-            unicode = "\u2657";
-            break;
-        case 4:
-            unicode = "\u2655";
-            break;
-        case 5:
-            unicode = "\u2654";
-            break;
-        default:
-            unicode = " ";
-            break;
-        }
-    } else {
-        switch (piece) {
-        case 0:
-            unicode = "\u265f";
-            hasMoved = false;
-            break;
-        case 1:
-            unicode = "\u265c";
-            break;
-        case 2:
-            unicode = "\u265e";
-            break;
-        case 3:
-            unicode = "\u265d";
-            break;
-        case 4:
-            unicode = "\u265b";
-            break;
-        case 5:
-            unicode = "\u265a";
-            break;
-        default:
-            unicode = " ";
-            break;
-        }
+    hasMoved = false;
+    switch (p) {
+    case 0:
+        unicode = !c ? "\u2659" : "\u265f";
+        isEnPassant = false;
+        break;
+    case 1:
+        unicode = !c ? "\u2656" : "\u265c";
+        break;
+    case 2:
+        unicode = !c ? "\u2658" : "\u265e";
+        break;
+    case 3:
+        unicode = !c ? "\u2657" : "\u265d";
+        break;
+    case 4:
+        unicode = !c ? "\u2655" : "\u265b";
+        break;
+    case 5:
+        unicode = !c ? "\u2654" : "\u265a";
+        break;
+    default:
+        unicode = " ";
+        break;
     }
 }
 
@@ -70,6 +43,10 @@ int chesspiece::getcolor() const {
 
 int chesspiece::getpiece() const {
     return piece;
+}
+
+void chesspiece::setpiece(int p) {
+    piece = p;
 }
 
 std::string chesspiece::getposition() const {
@@ -84,12 +61,46 @@ std::string chesspiece::getunicode() const {
     return unicode;
 }
 
+void chesspiece::setunicode(int p, int c) {
+    switch (p) {
+    case 0:
+        unicode = !c ? "\u2659" : "\u265f";
+        break;
+    case 1:
+        unicode = !c ? "\u2656" : "\u265c";
+        break;
+    case 2:
+        unicode = !c ? "\u2658" : "\u265e";
+        break;
+    case 3:
+        unicode = !c ? "\u2657" : "\u265d";
+        break;
+    case 4:
+        unicode = !c ? "\u2655" : "\u265b";
+        break;
+    case 5:
+        unicode = !c ? "\u2654" : "\u265a";
+        break;
+    default:
+        unicode = " ";
+        break;
+    }
+}
+
 bool chesspiece::gethasmoved() const {
     return hasMoved;
 }
 
-void chesspiece::setenpassant() {
-    isEnPassant = true;
+void chesspiece::sethasmoved() {
+    hasMoved = true;
+}
+
+void chesspiece::setenpassant(bool value) {
+    isEnPassant = value;
+}
+
+bool chesspiece::getenpassant() const {
+    return isEnPassant;
 }
 
 void chesspiece::addmove(std::string move) {
