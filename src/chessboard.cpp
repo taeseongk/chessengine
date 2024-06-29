@@ -90,7 +90,6 @@ void chessboard::calcmoves(int color) {
         pieces[i]->clearmoves();
         addmoves(pieces[i]);
         checkmoves(pieces[i]);
-        // std::cout << "Hello: " << pieces[i]->getunicode() << std::endl;
     }
 }
 
@@ -104,15 +103,8 @@ void chessboard::addmoves(chesspiece *piece) {
     postoint(c, piece->getposition(), x, y);
     switch (p) {
     case 0:
-        /*
-        std::cout << piece->getposition() << " " << piece->gethasmoved()
-                  << std::endl;
-        std::cout << piece->getposition() << " " << board[x - 1][y]->getpiece()
-                  << " " << board[x - 2][y]->getpiece() << std::endl;
-        */
         if (!piece->gethasmoved() && board[x - 1][y]->getpiece() == -1 &&
             board[x - 2][y]->getpiece() == -1) {
-            // std::cout << "What" << piece->getposition() << std::endl;
             piece->addmove(inttopos(c, x - 2, y));
         }
         if (board[x - 1][y]->getpiece() == -1) {
@@ -132,7 +124,6 @@ void chessboard::addmoves(chesspiece *piece) {
                 piece->addmove(inttopos(c, x - 1, y - 1) + "=B");
                 piece->addmove(inttopos(c, x - 1, y - 1) + "=N");
             } else {
-                // std::cout << "TEST1" << std::endl;
                 piece->addmove(inttopos(c, x - 1, y - 1));
             }
         }
@@ -143,18 +134,15 @@ void chessboard::addmoves(chesspiece *piece) {
                 piece->addmove(inttopos(c, x - 1, y + 1) + "=B");
                 piece->addmove(inttopos(c, x - 1, y + 1) + "=N");
             } else {
-                // std::cout << "TEST2" << std::endl;
                 piece->addmove(inttopos(c, x - 1, y + 1));
             }
         }
         if (y - 1 >= 0 && board[x][y - 1]->getcolor() == 1 - c &&
             board[x][y - 1]->getenpassant()) {
-            // std::cout << "TEST3" << std::endl;
             piece->addmove(inttopos(c, x - 1, y - 1));
         }
         if (y + 1 < 8 && board[x][y + 1]->getcolor() == 1 - c &&
             board[x][y + 1]->getenpassant()) {
-            // std::cout << "TEST4" << std::endl;
             piece->addmove(inttopos(c, x - 1, y + 1));
         }
         break;
@@ -193,7 +181,6 @@ void chessboard::addmoves(chesspiece *piece) {
         }
         if (cancastle(c, 0)) {
             piece->addmove("O-O");
-            // std::cout << "TEST" << std::endl;
         }
         if (cancastle(c, 1)) {
             piece->addmove("O-O-O");
@@ -237,9 +224,6 @@ void chessboard::showmoves(int color) {
 void chessboard::makemove(chesspiece *piece, std::string move) {
     int p = piece->getpiece();
     int c = piece->getcolor();
-    int x;
-    int y;
-    chesspiece ***board = !c ? wboard : bboard;
     setenpassant(c);
     if (p == 0) {
         if (!piece->gethasmoved() &&
@@ -278,6 +262,9 @@ void chessboard::checkmoves(chesspiece *piece) {
         int newX;
         int newY;
         std::string move = moves[i];
+        if (move == "O-O" || move == "O-O-O") {
+            continue;
+        }
         postoint(c, piece->getposition(), x, y);
         postoint(c, move, newX, newY);
         chesspiece *captured = nullptr;
@@ -321,7 +308,6 @@ void chessboard::setpiece(chesspiece *piece, std::string move) {
     int c = piece->getcolor();
     chesspiece ***board = !c ? wboard : bboard;
     chesspiece ***oboard = !c ? bboard : wboard;
-    std::vector<chesspiece *> *pieces = !c ? &bpieces : &wpieces;
     int x;
     int y;
     postoint(c, piece->getposition(), x, y);
@@ -347,9 +333,9 @@ bool chessboard::ischeck(int color, std::string pos) {
     std::vector<chesspiece *> pieces = !color ? wpieces : bpieces;
     chesspiece ***board = !color ? wboard : bboard;
     postoint(color, pos, x, y);
-    if ((board[x - 1][y - 1]->getpiece() == 0 &&
+    if ((x - 1 >= 0 && y - 1 >= 0 && board[x - 1][y - 1]->getpiece() == 0 &&
          board[x - 1][y - 1]->getcolor() == 1 - color) ||
-        (board[x - 1][y + 1]->getpiece() == 0 &&
+        (x - 1 >= 0 && y + 1 < 8 && board[x - 1][y + 1]->getpiece() == 0 &&
          board[x - 1][y + 1]->getcolor() == 1 - color)) {
         return true;
     }
@@ -402,8 +388,8 @@ bool chessboard::cancastle(int color, int kq) {
     chesspiece ***board = !color ? wboard : bboard;
     std::vector<std::vector<std::string>> rPos = {{"h1", "a1"}, {"h8", "a8"}};
     std::string kPos = !color ? "e1" : "e8";
-    chesspiece *rook;
-    chesspiece *king;
+    chesspiece *rook = nullptr;
+    chesspiece *king = nullptr;
     for (int i = 0; i < pieces.size(); i++) {
         if (pieces[i]->getpiece() == 1 &&
             pieces[i]->getposition() == rPos[color][kq] &&
@@ -436,7 +422,6 @@ bool chessboard::cancastle(int color, int kq) {
 }
 
 void chessboard::docastle(int color, int kq) {
-    chesspiece ***board = !color ? wboard : bboard;
     std::vector<chesspiece *> pieces = !color ? wpieces : bpieces;
     std::vector<std::vector<std::string>> sq = {
         {"f1", "g1"}, {"d1", "c1", "b1"}, {"f8", "g8"}, {"d8", "c8", "b8"}};

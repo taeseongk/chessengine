@@ -39,24 +39,29 @@ void chessgame::doturn(int color) {
 }
 
 int chessgame::starttest(std::vector<std::vector<std::string>> games) {
-    int color = 0;
     for (int i = 0; i < games.size(); i++) {
+        int color = 0;
+        std::cout << "Game " << i + 1 << std::endl;
         for (int j = 0; j < games[i].size(); j++) {
             std::string move = games[i][j];
-            board->print(color);
+            // board->print(color);
             board->calcmoves(color);
-            board->showmoves(color);
+            // board->showmoves(color);
+            /*
             std::cout << "Move: " << move << std::endl;
             std::cout << std::endl;
             std::cout << std::endl;
+            */
             std::vector<chesspiece *> pieces;
-            if (move == "1-0" || move == "0-1" || move == "1/2-1/2") {
-                std::cout << "Successful!" << std::endl;
-                return 0;
+            if (move == "1-0") {
+                std::cout << "White wins!" << std::endl;
+            } else if (move == "0-1") {
+                std::cout << "Black wins!" << std::endl;
+            } else if (move == "1/2-1/2") {
+                std::cout << "Draw!" << std::endl;
             } else {
                 std::string m;
                 pieces = parse(color, move, m);
-                // std::cout << pieces.size() << " " << m << std::endl;
                 for (int k = pieces.size() - 1; k >= 0; k--) {
                     if (!board->isvalid(pieces[k], m)) {
                         pieces.erase(pieces.begin() + k);
@@ -67,6 +72,8 @@ int chessgame::starttest(std::vector<std::vector<std::string>> games) {
             }
             color = !color ? 1 : 0;
         }
+        delete board;
+        board = new chessboard();
     }
     std::cout << "Successful!" << std::endl;
     return 0;

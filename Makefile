@@ -5,7 +5,7 @@ TESTS = tests
 BIN = bin
 
 CC = g++
-CFLAGS = -std=c++20
+CFLAGS = -std=c++20 -Wall #-pedantic -fsanitize=address
 
 all: $(BIN)
 
