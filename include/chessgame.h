@@ -14,7 +14,7 @@ class chessgame {
     ~chessgame();
     void startgame();
     void doturn(int color);
-    int starttest(std::vector<std::vector<std::string>> games);
+    int starttest(std::vector<std::string> moves);
     std::vector<chesspiece *> parse(int color, std::string move,
                                     std::string &parsed_move);
 };

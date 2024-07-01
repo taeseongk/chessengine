@@ -1,38 +1,55 @@
 #include "../include/parser.h"
 
-parser::parser() {}
+parser::parser() {
+    str = "";
+}
 
-void parser::parse(std::string pgn) {
+parser::parser(std::string pgn) {
     std::ifstream file(pgn);
     std::stringstream buffer;
     buffer << file.rdbuf();
-    std::string str = buffer.str();
-    // std::cout << str << std::endl;
-    std::vector<std::string> games;
-    std::regex game_pattern(
-        R"(((\d+\.\s+)([\w\+\=\-]+\s+)((\{[^\}]+\})\s+)?(([\w\+\=\-]+\s+)((\{[^\}]+\})\s+)?)?)+(1-0|0-1|1\/2-1\/2))");
-    std::sregex_iterator iter1(str.begin(), str.end(), game_pattern);
-    std::sregex_iterator end;
-
-    for (; iter1 != end; ++iter1) {
-        std::cout << iter1->str() << std::endl;
-        games.push_back(iter1->str());
-    }
-
-    std::regex move_pattern(
-        R"(([KQRBN][1-8a-hx][\w\+\=#]*)|([a-h][1-8x][\w\+\=#]*)|(O-O-O|O-O)|(1-0|0-1|1\/2-1\/2))");
-    for (int i = 0; i < games.size(); i++) {
-        std::sregex_iterator iter2(games[i].begin(), games[i].end(),
-                                   move_pattern);
-        std::sregex_iterator end;
-        std::vector<std::string> game;
-        for (; iter2 != end; ++iter2) {
-            game.push_back(iter2->str());
-        }
-        chessgames.push_back(game);
-    }
+    str = buffer.str();
 }
 
-std::vector<std::vector<std::string>> parser::getgames() const {
-    return chessgames;
+int parser::parse() {
+    moves.clear();
+    int i = 0;
+    int len = str.length();
+    int l = 0;
+    for (; i < str.length(); i++) {
+        if (i > 0 && str[i - 1] != '\"') {
+            if ((i + 2 < len && str.substr(i, 3) == "1-0") ||
+                (i + 2 < len && str.substr(i, 3) == "0-1")) {
+                l = 3;
+                break;
+            } else if ((i + 6 < len && str.substr(i, 7) == "1/2-1/2")) {
+                l = 7;
+                break;
+            }
+        }
+    }
+    std::string s = str.substr(0, i + l);
+    str.erase(0, i + l + 1);
+    std::istringstream stream(s);
+    std::ostringstream result;
+    std::string line;
+    std::regex info_pattern(R"(\[.*\]\s*)");
+    while (std::getline(stream, line)) {
+        if (!std::regex_match(line, info_pattern)) {
+            result << line << "\n";
+        }
+    }
+    s = result.str();
+    std::regex move_pattern(
+        R"(([KQRBN][1-8a-hx][\w\+\=#]*)|([a-h][1-8x][\w\+\=#]*)|(O-O-O|O-O)|(1-0|0-1|1\/2-1\/2))");
+    std::sregex_iterator iter(s.begin(), s.end(), move_pattern);
+    std::sregex_iterator end;
+    for (; iter != end; ++iter) {
+        moves.push_back(iter->str());
+    }
+    return l != 0 ? 0 : 1;
+}
+
+std::vector<std::string> parser::getmoves() const {
+    return moves;
 }

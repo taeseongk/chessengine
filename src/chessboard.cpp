@@ -236,9 +236,9 @@ void chessboard::makemove(chesspiece *piece, std::string move) {
             dopromotion(piece, 4, move.substr(0, 2));
         } else if (str == "=R") {
             dopromotion(piece, 1, move.substr(0, 2));
-        } else if (str == "=B") {
-            dopromotion(piece, 2, move.substr(0, 2));
         } else if (str == "=N") {
+            dopromotion(piece, 2, move.substr(0, 2));
+        } else if (str == "=B") {
             dopromotion(piece, 3, move.substr(0, 2));
         }
     } else if (move == "O-O") {
@@ -282,6 +282,9 @@ void chessboard::checkmoves(chesspiece *piece) {
         }
         board[newX][newY] = piece;
         piece->setposition(inttopos(c, newX, newY));
+        if (second) {
+            board[x][newY] = new chesspiece();
+        }
         chesspiece *king;
         for (int i = 0; i < pieces.size(); i++) {
             if (pieces[i]->getpiece() == 5) {
@@ -405,7 +408,7 @@ bool chessboard::cancastle(int color, int kq) {
         return false;
     }
     std::vector<std::vector<std::string>> sq = {
-        {"f1", "g1"}, {"b1", "c1", "d1"}, {"f8", "g8"}, {"b8", "c8", "d8"}};
+        {"f1", "g1"}, {"d1", "c1", "b1"}, {"f8", "g8"}, {"d8", "c8", "b8"}};
     std::vector<std::string> sqs = sq[kq + (2 * color)];
     for (int i = 0; i < sqs.size(); i++) {
         int x;

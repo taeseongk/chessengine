@@ -42,7 +42,7 @@ $(BIN)/test: $(TESTS)/test.cpp $(OBJ)/parser.o $(OBJ)/chessgame.o $(OBJ)/chessbo
 $(BIN)/parser: $(TESTS)/parsertest.cpp $(OBJ)/parser.o $(OBJ)/chessgame.o $(OBJ)/chessboard.o $(OBJ)/chesspiece.o | $(BIN)
 	$(CC) $(CFLAGS) -o $@ $^
 
-$(BIN)/chessgame: $(TESTS)/gametest.cpp $(OBJ)/chessgame.o $(OBJ)/chessboard.o $(OBJ)/chesspiece.o | $(BIN)
+$(BIN)/chessgame: $(TESTS)/game.cpp $(OBJ)/chessgame.o $(OBJ)/chessboard.o $(OBJ)/chesspiece.o | $(BIN)
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:

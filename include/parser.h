@@ -8,11 +8,13 @@
 
 class parser {
   private:
-    std::vector<std::vector<std::string>> chessgames;
+    std::string str;
+    std::vector<std::string> moves;
 
   public:
     parser();
-    void parse(std::string pgn);
-    std::vector<std::vector<std::string>> getgames() const;
+    parser(std::string pgn);
+    int parse();
+    std::vector<std::string> getmoves() const;
 };
 #endif

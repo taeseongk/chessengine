@@ -1,11 +1,18 @@
 #include "../include/parser.h"
-#include "../include/chessgame.h"
 
 int main(int argc, char *argv[]) {
-    parser p = parser();
-    p.parse("./tests/pgnfiles/2.pgn");
-    std::vector<std::vector<std::string>> games = p.getgames();
-    std::cout << "Size: " << games.size() << std::endl;
-    chessgame game = chessgame();
-    game.starttest(games);
+    parser p = parser("./tests/pgnfiles/4.pgn");
+    /*
+    int i = 1;
+    while (1) {
+        int check = p.parse();
+
+        if (check) {
+            break;
+        }
+        i++;
+    }
+    */
+    p.parse();
+    p.parse();
 }
