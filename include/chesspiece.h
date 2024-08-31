@@ -25,11 +25,11 @@ class chesspiece {
     std::string getunicode() const;
     void setunicode(int p, int c);
     bool gethasmoved() const;
-    void sethasmoved();
+    void sethasmoved(bool value);
     void setenpassant(bool value);
     bool getenpassant() const;
     void addmove(std::string move);
-    void delmove(std::string move);
+    void delmove(int i);
     std::vector<std::string> getmoves() const;
     void clearmoves();
 };

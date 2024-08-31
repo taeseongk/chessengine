@@ -18,7 +18,7 @@ void chessgame::startgame() {
 void chessgame::doturn(int color) {
     system("clear");
     board->print(color);
-    board->calcmoves(color);
+    board->genmoves(color);
     board->showmoves(color);
 
     std::string move;
@@ -35,7 +35,7 @@ void chessgame::doturn(int color) {
             }
         }
     } while (pieces.size() != 1);
-    board->makemove(pieces[0], m);
+    board->makemove(pieces[0], m, true);
 }
 
 int chessgame::starttest(std::vector<std::string> moves) {
@@ -43,11 +43,14 @@ int chessgame::starttest(std::vector<std::string> moves) {
     for (int i = 0; i < moves.size(); i++) {
         std::string move = moves[i];
         // board->print(color);
-        board->calcmoves(color);
+        board->genmoves(color);
         // board->showmoves(color);
-        // std::cout << "Move: " << move << std::endl;
-        //   std::cout << std::endl;
-        //   std::cout << std::endl;
+        // std::cout << "Move: " << move << "\n";
+        // std::cout << "\n";
+        /*
+        int yo;
+        std::cin >> yo;
+        */
         if (move == "1-0" || move == "0-1" || move == "1/2-1/2") {
             break;
         } else {
@@ -60,7 +63,7 @@ int chessgame::starttest(std::vector<std::string> moves) {
                 }
             }
             assert(pieces.size() == 1);
-            board->makemove(pieces[0], m);
+            board->makemove(pieces[0], m, true);
             color = !color ? 1 : 0;
         }
     }
@@ -82,8 +85,6 @@ std::vector<chesspiece *> chessgame::parse(int color, std::string move,
     if (p == 'K' || p == 'Q' || p == 'R' || p == 'B' || p == 'N') {
         for (int i = 0; i < pieces.size(); i++) {
             if (len == 3 && pieces[i]->getpiece() == m[p]) {
-                // std::cout << "Adding: " << pieces[i]->getunicode() << ": "
-                //<< pieces[i]->getposition() << std::endl;
                 res.push_back(pieces[i]);
             } else if (len == 4 && isdigit(move[1]) &&
                        pieces[i]->getpiece() == m[p] &&
@@ -109,7 +110,6 @@ std::vector<chesspiece *> chessgame::parse(int color, std::string move,
         }
         parsed_move = len % 2 ? move.substr(1, len - 1) : move;
     } else if (move == "O-O" || move == "O-O-O") {
-        // std::cout << "HELLo" << std::endl;
         for (int i = 0; i < pieces.size(); i++) {
             if (pieces[i]->getpiece() == 5) {
                 res.push_back(pieces[i]);

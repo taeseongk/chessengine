@@ -91,8 +91,8 @@ bool chesspiece::gethasmoved() const {
     return hasMoved;
 }
 
-void chesspiece::sethasmoved() {
-    hasMoved = true;
+void chesspiece::sethasmoved(bool value) {
+    hasMoved = value;
 }
 
 void chesspiece::setenpassant(bool value) {
@@ -107,12 +107,8 @@ void chesspiece::addmove(std::string move) {
     moves.push_back(move);
 }
 
-void chesspiece::delmove(std::string move) {
-    for (int i = 0; i < this->moves.size(); i++) {
-        if (this->moves[i] == move) {
-            this->moves.erase(this->moves.begin() + i);
-        }
-    }
+void chesspiece::delmove(int i) {
+    moves.erase(moves.begin() + i);
 }
 
 std::vector<std::string> chesspiece::getmoves() const {
