@@ -7,6 +7,11 @@ chessboard::chessboard() {
         wboard[i] = new chesspiece *[8];
         bboard[i] = new chesspiece *[8];
     }
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            wboard[i][j] = bboard[i][j] = nullptr;
+        }
+    }
     std::string wpositions[16] = {"a2", "b2", "c2", "d2", "e2", "f2",
                                   "g2", "h2", "a1", "b1", "c1", "d1",
                                   "e1", "f1", "g1", "h1"};
@@ -37,12 +42,13 @@ chessboard::chessboard() {
 chessboard::~chessboard() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
+            wboard[i][j] = nullptr;
             delete wboard[i][j];
         }
     }
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if (bboard[i][j]->getpiece() == -1) {
+            if (bboard[i][j] && bboard[i][j]->getpiece() == -1) {
                 delete bboard[i][j];
             }
         }
@@ -54,15 +60,23 @@ chessboard::~chessboard() {
     delete wboard;
     delete bboard;
     for (int i = 0; i < wpieces.size(); i++) {
-        if (wpieces[i]->getpiece() == -1) {
+        if (wpieces[i]) {
             delete wpieces[i];
         }
     }
     for (int i = 0; i < bpieces.size(); i++) {
-        if (bpieces[i]->getpiece() == -1) {
+        if (bpieces[i]) {
             delete bpieces[i];
         }
     }
+}
+
+chesspiece ***chessboard::getboard(int color) const {
+    return !color ? wboard : bboard;
+}
+
+std::vector<chesspiece *> chessboard::getpieces(int color) const {
+    return !color ? wpieces : bpieces;
 }
 
 chesspiece *chessboard::findpiece(int color, int piece, std::string pos) {
@@ -105,7 +119,6 @@ std::string chessboard::inttopos(int color, int x, int y) {
 
 void chessboard::genmoves(int color) {
     std::vector<chesspiece *> *pieces = !color ? &wpieces : &bpieces;
-    chesspiece ***board = !color ? wboard : bboard;
     for (int i = 0; i < pieces->size(); i++) {
         chesspiece *piece = (*pieces)[i];
         if (piece->getpiece() == -1) {
@@ -244,98 +257,41 @@ void chessboard::showmoves(int color) {
     }
 }
 
-void chessboard::makemove(chesspiece *piece, std::string move, bool perm) {
+void chessboard::makemove(chesspiece *piece, std::string move, movedata *data) {
     int p = piece->getpiece(), c = piece->getcolor();
-    /*
-    movedata *movedata = new chessboard::movedata;
-    movedata->color = c;
-    movedata->move = move;
-    movedata->index = -1;
-    movedata->size = 0;
-    */
-    setenpassant(c, nullptr);
+    data->color = c;
+    data->move = move;
+    data->index = -1;
+    data->size = 0;
+    setenpassant(c, data);
     if (p == 0) {
         std::string str = move.substr(move.length() - 2, 2);
         if (str.substr(0, 1) == "=") {
-            // movedata->oldpieces[movedata->size++] = *piece;
-            // dopawnmove(piece, move.substr(0, 2), movedata, true);
-            dopawnmove(piece, move.substr(0, 2), nullptr, true);
+            dopawnmove(piece, move.substr(0, 2), data, true);
         }
         if (str == "=Q") {
-            // dopromotion(piece, 4, move.substr(0, 2), movedata);
-            dopromotion(piece, 4, move.substr(0, 2), nullptr);
+            dopromotion(piece, 4, move.substr(0, 2), data);
         } else if (str == "=R") {
-            // dopromotion(piece, 1, move.substr(0, 2), movedata);
-            dopromotion(piece, 1, move.substr(0, 2), nullptr);
+            dopromotion(piece, 1, move.substr(0, 2), data);
         } else if (str == "=N") {
-            // dopromotion(piece, 2, move.substr(0, 2), movedata);
-            dopromotion(piece, 2, move.substr(0, 2), nullptr);
+            dopromotion(piece, 2, move.substr(0, 2), data);
         } else if (str == "=B") {
-            // dopromotion(piece, 3, move.substr(0, 2), movedata);
-            dopromotion(piece, 3, move.substr(0, 2), nullptr);
+            dopromotion(piece, 3, move.substr(0, 2), data);
         } else {
-            // dopawnmove(piece, move.substr(0, 2), movedata, false);
-            dopawnmove(piece, move.substr(0, 2), nullptr, false);
+            dopawnmove(piece, move.substr(0, 2), data, false);
         }
     } else if (move == "O-O") {
-        // docastle(c, 0, movedata);
-        docastle(c, 0, nullptr);
+        docastle(c, 0, data);
     } else if (move == "O-O-O") {
-        // docastle(c, 1, movedata);
-        docastle(c, 1, nullptr);
+        docastle(c, 1, data);
     } else {
-        // movepiece(piece, move, movedata, false);
-        movepiece(piece, move, nullptr, false);
-    }
-
-    if (!perm) {
-        /*
-        std::cout << "Make Move: " << movedata->move << "\n";
-        std::cout << "Old Pieces: \n";
-        for (int i = 0; i < movedata->oldpieces.size(); i++) {
-            chesspiece p = movedata->oldpieces[i];
-            std::cout << p.getunicode() << "(" << p.getposition() << ")\n";
-        }
-        std::cout << "New Pieces: \n";
-        for (int i = 0; i < movedata->newpieces.size(); i++) {
-            chesspiece p = movedata->newpieces[i];
-            std::cout << p.getunicode() << "(" << p.getposition() << ")\n";
-        }
-        std::cout << "\n";
-        */
-        // movepath.push(movedata);
-    }
-}
-
-void chessboard::unmakemove() {
-    movedata *movedata = movepath.top();
-    movepath.pop();
-    int c = movedata->color;
-    int size = movedata->size;
-    std::string move = movedata->move;
-    /*
-    for (int i = 0; i < size; i++) {
-        chesspiece oldpiece = movedata->oldpieces[i];
-        chesspiece newpiece = movedata->newpieces[i];
-        setpiece(c, new chesspiece(), newpiece.getposition());
-        chesspiece *p =
-            findpiece(c, newpiece.getpiece(), newpiece.getposition());
-        changepiece(p, oldpiece);
-        setpiece(c, p, p->getposition());
-    }
-    */
-    if (movedata->index != -1) {
-        std::vector<chesspiece *> *opieces = !c ? &bpieces : &wpieces;
-        chesspiece *piece = (*opieces)[movedata->index];
-        changepiece(piece, movedata->captured);
-        setpiece(1 - c, piece, piece->getposition());
+        movepiece(piece, move, data, false);
     }
 }
 
 void chessboard::checkmoves(chesspiece *piece) {
     int c = piece->getcolor();
     chesspiece ***board = !c ? wboard : bboard;
-    std::vector<chesspiece *> *pieces = !c ? &wpieces : &bpieces;
     std::vector<std::string> moves = piece->getmoves();
     int size = moves.size();
     for (int i = size - 1; i >= 0; i--) {
@@ -386,17 +342,16 @@ void chessboard::movepiece(chesspiece *piece, std::string move, movedata *data,
     int c = piece->getcolor();
     chesspiece ***board = !c ? wboard : bboard;
     setpiece(c, new chesspiece(), piece->getposition());
-    /*
     int j = -1;
     for (int i = 0; i < data->size; i++) {
-        if (data->oldpieces[i].getposition() == piece->getposition()) {
+        if (data->oldpieces[i]->position == piece->getposition()) {
             j = i;
+            break;
         }
     }
-    if (j == -1 && !ispromo) {
-        data->oldpieces[data->size++] = *piece;
+    if (j == -1) {
+        data->oldpieces[data->size++] = makepiece(piece);
     }
-    */
     int x, y;
     postoint(c, move, x, y);
     if (board[x][y]->getpiece() != -1) {
@@ -408,13 +363,12 @@ void chessboard::movepiece(chesspiece *piece, std::string move, movedata *data,
         piece->setenpassant(true);
     }
     piece->sethasmoved(true);
-    /*
     if (j == -1 && !ispromo) {
-        data->newpieces[data->size - 1] = *piece;
+        data->newpieces[data->size - 1] = makepiece(piece);
     } else if (j != -1 && !ispromo) {
-        data->newpieces[j] = *piece;
+        delete data->newpieces[j];
+        data->newpieces[j] = makepiece(piece);
     }
-    */
 }
 
 void chessboard::setpiece(int color, chesspiece *piece, std::string square) {
@@ -442,10 +396,25 @@ void chessboard::changepiece(chesspiece *piece, chesspiece oldpiece) {
     piece->sethasmoved(oldpiece.gethasmoved());
     piece->setenpassant(oldpiece.getenpassant());
     piece->clearmoves();
-    std::vector<std::string> moves = oldpiece.getmoves();
-    for (int i = 0; i < moves.size(); i++) {
-        piece->addmove(moves[i]);
-    }
+}
+
+void chessboard::changepiece(chesspiece *piece, ::piece *oldpiece) {
+    piece->setpiece(oldpiece->piece);
+    piece->setunicode(oldpiece->piece, oldpiece->color);
+    piece->setposition(oldpiece->position);
+    piece->sethasmoved(oldpiece->hasMoved);
+    piece->setenpassant(oldpiece->isEnPassant);
+    piece->clearmoves();
+}
+
+::piece *chessboard::makepiece(chesspiece *piece) {
+    ::piece *p = new ::piece;
+    p->piece = piece->getpiece();
+    p->color = piece->getcolor();
+    p->position = piece->getposition();
+    p->hasMoved = piece->gethasmoved();
+    p->isEnPassant = piece->getenpassant();
+    return p;
 }
 
 bool chessboard::ischeck(int color, std::string pos) {
@@ -499,10 +468,6 @@ bool chessboard::ischeck(int color, std::string pos) {
     return false;
 }
 
-std::vector<chesspiece *> chessboard::getpieces(int color) const {
-    return !color ? wpieces : bpieces;
-}
-
 bool chessboard::cancastle(int color, int kq) {
     chesspiece ***board = !color ? wboard : bboard;
     std::vector<std::vector<std::string>> rPos = {{"h1", "a1"}, {"h8", "a8"}};
@@ -544,7 +509,6 @@ void chessboard::dopawnmove(chesspiece *piece, std::string move, movedata *data,
                             bool ispromo) {
     int c = piece->getcolor();
     chesspiece ***board = !c ? wboard : bboard;
-    chesspiece ***oboard = !c ? bboard : wboard;
     int x, y;
     movepiece(piece, move, data, ispromo);
     postoint(c, move, x, y);
@@ -558,7 +522,7 @@ void chessboard::dopromotion(chesspiece *piece, int newpiece, std::string move,
                              movedata *data) {
     int c = piece->getcolor();
     changepiece(piece, chesspiece(newpiece, c, move));
-    // data->newpieces[data->size - 1] = *piece;
+    data->newpieces[data->size - 1] = makepiece(piece);
     setpiece(c, piece, move);
 }
 
@@ -567,9 +531,9 @@ void chessboard::setenpassant(int color, movedata *data) {
     for (int i = 0; i < pieces->size(); i++) {
         chesspiece *piece = (*pieces)[i];
         if (piece->getpiece() == 0 && piece->getenpassant()) {
-            // data->oldpieces[data->size++] = *piece;
+            data->oldpieces[data->size++] = makepiece(piece);
             piece->setenpassant(false);
-            // data->newpieces[data->size - 1] = *piece;
+            data->newpieces[data->size - 1] = makepiece(piece);
         }
     }
 }
@@ -579,8 +543,8 @@ void chessboard::removepiece(int color, std::string pos, movedata *data) {
     for (int i = 0; i < opieces->size(); i++) {
         chesspiece *piece = (*opieces)[i];
         if (piece->getpiece() != -1 && piece->getposition() == pos) {
-            // data->index = i;
-            // data->captured = *piece;
+            data->index = i;
+            data->captured = makepiece(piece);
             setpiece(color, new chesspiece(), pos);
             changepiece(piece, chesspiece());
         }

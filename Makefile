@@ -9,6 +9,9 @@ CFLAGS = -std=c++20 -Wall #-pedantic -fsanitize=address
 
 all: $(BIN)
 
+engine: $(BIN)/engine
+	./$(BIN)/engine
+
 test: $(BIN)/test
 	./$(BIN)/test
 
@@ -27,16 +30,25 @@ $(BIN):
 $(OBJ)/parser.o: $(SRC)/parser.cpp $(INC)/parser.h | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ)/chessgame.o: $(SRC)/chessgame.cpp $(INC)/chessgame.h $(SRC)/chessboard.cpp $(INC)/chessboard.h | $(OBJ)
+$(OBJ)/chessengine.o: $(SRC)/chessengine.cpp $(INC)/chessengine.h | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/chessgame.o: $(SRC)/chessgame.cpp $(INC)/chessgame.h | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ)/chessboard.o: $(SRC)/chessboard.cpp $(INC)/chessboard.h | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(OBJ)/movedata.o: $(SRC)/movedata.cpp $(INC)/movedata.h | $(OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 $(OBJ)/chesspiece.o: $(SRC)/chesspiece.cpp $(INC)/chesspiece.h | $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BIN)/test: $(TESTS)/test.cpp $(OBJ)/parser.o $(OBJ)/chessgame.o $(OBJ)/chessboard.o $(OBJ)/chesspiece.o | $(BIN)
+$(BIN)/engine: $(TESTS)/engine.cpp $(OBJ)/chessengine.o $(OBJ)/chessgame.o $(OBJ)/chessboard.o $(OBJ)/chesspiece.o | $(BIN)
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(BIN)/test: $(TESTS)/test.cpp $(OBJ)/parser.o $(OBJ)/chessengine.o $(OBJ)/chessgame.o $(OBJ)/chessboard.o $(OBJ)/movedata.o $(OBJ)/chesspiece.o | $(BIN)
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(BIN)/parser: $(TESTS)/parsertest.cpp $(OBJ)/parser.o $(OBJ)/chessgame.o $(OBJ)/chessboard.o $(OBJ)/chesspiece.o | $(BIN)

@@ -1,8 +1,6 @@
 *.o
 *.exe
-./tests
-./tests/*
+tests
+tests/*
 .DS_Store
-.log.txt
-
-
+log.txt

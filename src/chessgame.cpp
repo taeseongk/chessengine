@@ -8,19 +8,18 @@ chessgame::~chessgame() {
     delete board;
 }
 
-void chessgame::startgame() {
-    while (1) {
-        doturn(0);
-        doturn(1);
-    }
+chessboard *chessgame::getboard() const {
+    return board;
 }
 
-void chessgame::doturn(int color) {
+int chessgame::doturn(int color, ::movedata *data) {
     system("clear");
     board->print(color);
     board->genmoves(color);
     board->showmoves(color);
-
+    if (board->ischeckmate(color)) {
+        return 1;
+    }
     std::string move;
     std::string m;
     chesspiece *p;
@@ -35,7 +34,8 @@ void chessgame::doturn(int color) {
             }
         }
     } while (pieces.size() != 1);
-    board->makemove(pieces[0], m, true);
+    board->makemove(pieces[0], m, data);
+    return 0;
 }
 
 int chessgame::starttest(std::vector<std::string> moves) {
@@ -63,7 +63,7 @@ int chessgame::starttest(std::vector<std::string> moves) {
                 }
             }
             assert(pieces.size() == 1);
-            board->makemove(pieces[0], m, true);
+            board->makemove(pieces[0], m, nullptr);
             color = !color ? 1 : 0;
         }
     }

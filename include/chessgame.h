@@ -12,8 +12,9 @@ class chessgame {
   public:
     chessgame();
     ~chessgame();
+    chessboard *getboard() const;
     void startgame();
-    void doturn(int color);
+    int doturn(int color, ::movedata *data);
     int starttest(std::vector<std::string> moves);
     std::vector<chesspiece *> parse(int color, std::string move,
                                     std::string &parsed_move);
